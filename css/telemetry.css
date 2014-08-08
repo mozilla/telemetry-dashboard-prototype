@@ -1,0 +1,223 @@
+.legend {
+    font-size: 11px;
+    padding: 35px 0 15px 0;
+}
+
+.time-period {
+    padding: 35px 0 15px 0;
+}
+
+svg .y-axis line,
+svg .x-axis line {
+    stroke: #ccc;
+    opacity: 0.3;
+}
+
+#histogram svg .x-axis line {
+    opacity: 1;
+}
+
+#histogram svg {
+    margin-top: 0px;
+}
+
+.line1-legend-color {
+    color: #0000ff;
+}
+
+.line2-legend-color {
+    color: #05b378;
+}
+
+.line3-legend-color {
+    color: #db4437;
+}
+
+.line1-legend-box-color {
+    background-color: #0000ff;
+    border-color: #0000ff;
+}
+
+.line2-legend-box-color {
+    background-color: #05b378;
+    border-color: #05b378;
+}
+
+.line3-legend-box-color {
+    background-color: #db4437;
+    border-color: #db4437;
+}
+
+.legend .btn-group .btn,
+.legend .btn-group .btn:focus {
+    color: white;
+}
+
+ .btn-group-releases.btn:hover {
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+}
+
+.btn-release {
+    margin-right: 2px;
+}
+
+.btn-release-options {
+    height: 22px;
+}
+
+.legend span span {
+    color: white;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.arc path {
+    stroke: #fff;
+}
+
+.arc text {
+    fill: #fff;
+}
+
+.year-marker line {
+    display: none;
+}
+
+.markers line {
+    opacity: 0.2;
+}
+
+.series-selector {
+    background-color: #f8f8f8;
+    min-width: 700px;
+}
+
+.series-selector div .row div {
+    float: left;
+    margin-left: 14px;
+}
+
+.choose-a-measure {
+    padding-top: 7px;
+    font-size: 16px;
+    text-transform:uppercase;
+    opacity: 0.7;
+}
+
+.table {
+    background-color: #fbfbfb;
+}
+
+.advanced-filter {
+    padding-top: 7px;
+}
+
+.series-selector div .row div.options {
+    padding-top: 7px;
+    padding-right: 16px;
+    float: right;
+}
+
+td {
+    text-align: center;
+}
+
+.options a {
+    padding-left: 14px;
+}
+
+.legend a {
+    color: white;
+    text-decoration: none;
+}
+
+.main-line.line1-color {
+    stroke-width: 1.8px;
+}
+
+.popover {
+    font-size:12px;
+}
+
+.dim {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1001;
+    background-color: black;
+    filter: alpha(opacity=50); /* internet explorer */
+    -khtml-opacity: 0.50;      /* khtml,old safari */
+    -moz-opacity: 0.50;       /* mozilla,netscape */
+    opacity: 0.50;           /* fx,safari,opera */
+    display: none;
+}
+
+.modal {
+    padding: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -230px;
+    margin-left: -350px;
+    z-index: 1002;
+    background-color: #fff;
+    width: 700px;
+    height: 400px;
+    display: none;
+    background-image: url(../images/bg-sand.png);
+}
+
+.modal p {
+    padding-top: 10px;
+    font-family: 'Open Sans', Arial;
+}
+
+.close_modal_box img {
+    border: 0;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: 6px;
+    left: 680px;
+    z-index: 1002;
+}
+
+.releases-dropdown {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.measure {
+    width: 300px;
+}
+
+.show-evolution-over,
+.ignore-small-data-points,
+.operating-system,
+.product,
+.operating-system-version {
+    width: 100%;
+}
+
+.hightop {
+    margin-top: 30px;
+}
+
+.option-label {
+    padding-top: 8px;
+}
+
+.line1-color {
+    stroke: #4040e8;
+}
+
+.area1-color,
+.line1-legend-box-color {
+    fill: #4040e8;
+}

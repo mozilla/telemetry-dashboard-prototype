@@ -1,0 +1,47 @@
+.line1-legend-box-color {
+    background-color: #ffd300;
+    border-color: #ffd300;
+}
+
+.line2-legend-box-color {
+    background-color: #18ff00;
+    border-color: #18ff00;
+}
+
+.line3-legend-box-color {
+    background-color: #ff0000;
+    border-color: #ff0000;
+}
+
+.legend .btn-group .btn, 
+.legend .btn-group .btn:focus {
+    color: #3b3b3b;
+    text-shadow: none;
+}
+
+.legend .btn-group .btn:hover {
+    color: #3b3b3b;
+    border-color: none;
+}
+
+.legend span span {
+    color: white;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.series-selector {
+    background-color: #202020;
+    border-color: #525151;
+}
+
+.legend a {
+    color: #3b3b3b;
+    text-decoration: none;
+}
+
+.modal {
+    color: #3b3b3b;
+}

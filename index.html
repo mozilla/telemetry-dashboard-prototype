@@ -1,0 +1,239 @@
+<html lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>Telemetry Prototype</title>
+    
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' 
+        rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic' 
+        rel='stylesheet' type='text/css'>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" 
+        rel="stylesheet">
+    <link rel="stylesheet" 
+        href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" id="light">
+    
+    <link rel="stylesheet" href="css/select2.css">
+    <link rel="stylesheet" href="css/select2-bootstrap.css">
+    <link href="css/metrics-graphics.css" rel="stylesheet" type="text/css" id="light">
+    <link href="" rel="stylesheet" type="text/css" id="dark">
+    <link href="css/telemetry.css" rel="stylesheet" type="text/css" id="light-telemetry">
+    <link href="" rel="stylesheet" type="text/css" id="dark-telemetry">
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src='js/metrics-graphics.js'></script>
+    <script src='js/telemetry.js'></script>
+    
+    <script src='js/main.js'></script>
+    <script src='js/select2.min.js'></script>
+</head>
+
+<body>
+    <div id='container' class='container'>
+        <div id='content-body'>
+            <div id='head'>
+                <ul>
+                    <li><a href='https://github.com/mozilla/#'>Code</a></li>
+                    <li><a href='https://github.com/mozilla/#/issues'>Issues</a></li>
+                    <li class='divider'>|</li>
+                    <li><a href="#" id="light-css" class="pill active">Light</a></li>
+                    <li><a href="#" id="dark-css" class="pill">Dark</a></li>
+                </ul>
+                
+                <h1>Telemetry Prototype</h1>
+            </div>
+
+            <div id='description'>
+                <p>This dashboard allows you to explore the many measures that we get 
+                from Telemetry.</p>
+            </div>
+
+            <div class='panel panel-default series-selector'>
+                <div class='panel-body'>
+                    <div class="row">
+                        <div class="choose-a-measure">
+                            Choose a measure
+                        </div>
+                        <div>
+                            <select class="measure">
+                                <option value="A11Y_ISIMPLEDOM_USAGE_FLAG">A11Y_ISIMPLEDOM_USAGE_FLAG</option>
+                                <option value="A11Y_CONSUMERS">A11Y_CONSUMERS</option>
+                                <option value="A11Y_IATABLE_USAGE_FLAG">A11Y_IATABLE_USAGE_FLAG</option>
+                                <option value="A11Y_INSTANTIATED_FLAG">A11Y_INSTANTIATED_FLAG</option>
+                                <option value="A11Y_UPDATE_TIME">A11Y_UPDATE_TIME</option>
+                            </select>
+                        </div>
+                        <div class="advanced-filter">
+                            <a href="#">Advanced filter</a>
+                        </div>
+                        <div class="options">
+                            <a href="#" class="preferences"><i class="fa fa-cog"></i> Preferences</a> 
+                            <a href="#" class="permalink"><i class="fa fa-link"></i> Permalink</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div id='trunk'>
+                <div class='row trunk-section'>
+                    <div class='col-lg-8'>
+                        <div class='row'>
+                            <div class='col-lg-12 gr' id='main-chart'></div>
+                        </div>
+                        <div class='row'>
+                            <!-- Time period options -->
+                            <div class='col-lg-6 gr time-period'>
+                                <div class="btn-group btn-group-xs text-center modify-time-period-controls">
+                                    <button type="button" class="btn btn-default active"
+                                        data-time_period="61">Past 2 months</button>
+                                    <button type="button" class="btn btn-default"
+                                        data-time_period="31">Past month</button>
+                                    <button type="button" class="btn btn-default"
+                                        data-time_period="8">Past week</button>
+                                </div>
+                            </div>
+                        
+                            <!-- Active releases -->
+                            <div class='col-lg-6 gr legend'>
+                                <div class="btn-group">
+                                    <button type="button" data-release="nightly34" data-sequence="1" class="line1-legend-box-color btn btn-xs btn-release">Nightly 34</button>
+                                    <button type="button" class="line1-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li class='disable-enable' data-release="nightly34" data-sequence="1"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly34" data-sequence="1"><a href="#">Change</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button type="button" data-release="2" data-sequence="2" class="line2-legend-box-color btn btn-xs btn-release">Nightly 33</button>
+                                    <button type="button" class="line2-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li class='disable-enable' data-release="nightly33" data-sequence="2"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly33" data-sequence="2"><a href="#">Change</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button type="button" data-release="nightly32" data-sequence="3" class="line3-legend-box-color btn btn-xs btn-release">Nightly 32</button>
+                                    <button type="button" class="line3-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li class='disable-enable' data-release="nightly32" data-sequence="3"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly32" data-sequence="3"><a href="#">Change</a></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-lg-4 text-center' id='histogram'></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id='footer'>
+            <a href="http://metricsgraphicsjs.org">MetricsGraphics.js 0.2</a>
+            <br />2014 &middot; Shared under a <a href="http://www.mozilla.org/MPL/2.0/">
+            Mozilla Public License</a>
+            <br /><a href="https://github.com/mozilla/metrics-graphics">
+                <i class="fa fa-github fa-3x" style="line-height:42px"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="dim"></div>
+    <div id="choose-releases-box" class="modal">
+        <a class='close_modal_box' href='#'>
+            <img src='images/x_black_small.png' alt='close' />
+        </a>
+        
+        <h2>Choose a different release</h2>
+        
+        <select class="releases-dropdown">
+            <option value="nightly34">Nightly 34</option>
+            <option value="nightly33">Nightly 33</option>
+            <option value="nightly32">Nightly 32</option>
+            <option value="nightly31">Nightly 31</option>
+            <option value="nightly30">Nightly 30</option>
+        </select>
+    </div>
+    
+    <div id="preferences-box" class="modal">
+        <a class='close_modal_box' href='#'>
+            <img src='images/x_black_small.png' alt='close' />
+        </a>
+        
+        <h2>Preferences</h2>
+        <br />
+        
+        <div class="row hightop">
+            <div class='col-lg-7 option-label'>X-axis units</div>
+            <div class='col-lg-5'>
+                <select class="options show-evolution-over">
+                    <option value="build-ids">Build IDs (dates)</option>
+                    <option value="calendar-dates">Calendar dates</option>
+                </select>
+            </div>
+        </div>
+        <div class="row hightop">
+            <div class='col-lg-7 option-label'>Ignore data points with low submission counts</div>
+            <div class='col-lg-5'>
+                <select class="options ignore-small-data-points">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div id="advanced-filter-box" class="modal">
+        <a class='close_modal_box' href='#'>
+            <img src='images/x_black_small.png' alt='close' />
+        </a>
+        
+        <h2>Advanced filter</h2>
+        <br />
+        
+        <div class="row hightop">
+            <div class='col-lg-7 option-label'>Filter by product</div>
+            <div class='col-lg-5'>
+                <select class="filter product">
+                    <option value="--">--</option>
+                    <option value="B2G">B2G</option>
+                    <option value="Fennec">Fennec</option>
+                    <option value="Firefox">Firefox</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="row hightop">
+            <div class='col-lg-7 option-label'>Filter by OS</div>
+            <div class='col-lg-5'>
+                <select class="filter operating-system">
+                    <option value="--">--</option>
+                    <option value="Darwin">Darwin</option>
+                    <option value="Linux">Linux</option>
+                    <option value="WINNT">Windows</option>
+                </select>
+            </div>
+        </div>
+        <div class="row hightop">
+            <div class='col-lg-7 option-label'>Filter by OS version</div>
+            <div class='col-lg-5'>
+                <select class="filter operating-system-version">
+                    <option value="--">--</option>
+                    <option value="lorem">Lorem</option>
+                    <option value="ipsum">Ipsum</option>
+                    <option value="dolor">Dolor</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
