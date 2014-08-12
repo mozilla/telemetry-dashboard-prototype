@@ -9,8 +9,17 @@
 }
 
 .line3-legend-box-color {
-    background-color: #ff0000;
-    border-color: #ff0000;
+    background-color: #e99d09;
+    border-color: #e99d09;
+}
+
+.line1-color {
+    stroke: #ffd300;
+}
+
+.area1-color,
+.line1-legend-box-color {
+    fill: #ffd300;
 }
 
 .legend .btn-group .btn, 

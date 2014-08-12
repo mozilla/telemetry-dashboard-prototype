@@ -144,7 +144,8 @@ $(document).ready(function() {
         }
         
         //draw histogram
-        drawHistogram();
+        //todo change this
+        drawHistogram({title: 'Beta 32'});
         
         //default color for histogram
         d3.selectAll(".bar rect")
@@ -152,7 +153,7 @@ $(document).ready(function() {
     })// end Telemetry.init
     
     
-    function drawHistogram() {
+    function drawHistogram(options) {
         // Generate a Bates distribution of 10 random variables.
         var values = d3.range(1000).map(d3.random.bates(10));
 
@@ -164,9 +165,11 @@ $(document).ready(function() {
         var data = d3.layout.histogram()
             .bins(x.ticks(20))
             (values);
+            
+        var title = (options.title) ? options.title : 'Histogram';
 
         moz_chart({
-            title: "Histogram",
+            title: title,
             description: "A histogram of the buckets for the chosen measure conditioned on release.",
             data: [data],
             chart_type: 'histogram',
@@ -255,7 +258,7 @@ $(document).ready(function() {
                 return;
             
             //redraw histogram using dummy date
-            drawHistogram();
+            drawHistogram({title: $(this).text()});
             
             //update histogram color
             d3.selectAll(".bar rect")
