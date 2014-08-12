@@ -30,7 +30,7 @@ svg .x-axis line {
 }
 
 .line3-legend-color {
-    color: #db4437;
+    color: #e99d09;
 }
 
 .line1-legend-box-color {
@@ -44,8 +44,8 @@ svg .x-axis line {
 }
 
 .line3-legend-box-color {
-    background-color: #db4437;
-    border-color: #db4437;
+    background-color: #e99d09;
+    border-color: #e99d09;
 }
 
 .legend .btn-group .btn,
@@ -220,4 +220,13 @@ td {
 .area1-color,
 .line1-legend-box-color {
     fill: #4040e8;
+}
+
+.line3-color {
+    stroke: #e99d09;
+}
+
+.area3-color,
+.line3-legend-box-color {
+    fill: #e99d09;
 }
