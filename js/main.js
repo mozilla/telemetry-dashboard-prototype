@@ -9,6 +9,11 @@ $(document).ready(function() {
     
     //style dropdowns
     $("select").select2();
+    
+    var global = {};
+    global.options = {
+        'show-evolution-over': 'calendar-dates'
+    }
 
     //load dummy data from telemetry
     var filter_before = new Date('2014-05-14');
@@ -29,9 +34,9 @@ $(document).ready(function() {
 
     //array since we'll want it to be int-indexed (order is significant)
     var showing_releases = [
-        'nightly34',
-        'nightly33',
-        'nightly32'
+        'beta32',
+        'beta31',
+        'beta30'
     ]
     
     //annotations
@@ -118,7 +123,7 @@ $(document).ready(function() {
         function plot_it(data){
             assignEventListeners();
             
-            //add annotations
+            //draw the chart on first-load
             split_by_data = moz_chart({
                 title: "Submissions",
                 description: "The number of submissions for the chosen measure.",
@@ -185,11 +190,11 @@ $(document).ready(function() {
     //todo, for dummy data only
     function fake_lookup(release) {
         switch(release) {
-            case 'nightly34':
+            case 'beta32':
                 return 'sponsored_shown';
-            case 'nightly33':
+            case 'beta31':
                 return 'affiliate_shown';
-            case 'nightly32':
+            case 'beta30':
                 return 'organic_shown';
         }
     }
@@ -327,25 +332,7 @@ $(document).ready(function() {
             
             //update data    
             //remove disabled one from data
-            moz_chart({
-                title: "Submissions",
-                description: "The number of submissions for the chosen measure.",
-                data: filterOutDisabledReleases(),
-                width: 700,
-                height: 400,
-                right: 10,
-                area: false,
-                target: '#main-chart',
-                show_years: true,
-                markers: markers,
-                x_extended_ticks: true,
-                y_extended_ticks: true,
-                xax_tick: 0,
-                x_accessor: 'date',
-                y_accessor: 'value',
-                custom_line_color_map: customerLineToColorMap(),
-                max_data_size: showing_releases.length
-            });
+            updateDataMySon({});
 
             return false;
         })
@@ -363,6 +350,22 @@ $(document).ready(function() {
             console.log(chosen_option, chosen_option_value);
             
             //TODO do other stuff to update chart with new option
+            
+            //if we're switching the x-axis to build ids, reformat the labels
+            if(chosen_option_value == 'build-ids') {
+                global.options['show-evolution-over'] = 'build-ids';
+                
+                //update data
+                updateDataMySon({
+                    show_years: false
+                });
+            }
+            //if we're switching the x-axis to calendar dates, reformat the labels
+            else if(chosen_option_value == 'calendar-dates') {
+                global.options['show-evolution-over'] = 'calendar-dates';
+            
+                updateDataMySon({});
+            }
         });
         
         //filter
@@ -464,25 +467,7 @@ $(document).ready(function() {
                 .removeClass('active');
 
             //update data
-            moz_chart({
-                title: "Submissions",
-                description: "The number of submissions for the chosen measure.",
-                data: filterOutDisabledReleases(),
-                width: 700,
-                height: 400,
-                right: 10,
-                area: false,
-                target: '#main-chart',
-                show_years: true,
-                markers: markers,
-                x_extended_ticks: true,
-                y_extended_ticks: true,
-                xax_tick: 0,
-                x_accessor: 'date',
-                y_accessor: 'value',
-                custom_line_color_map: customerLineToColorMap(),
-                max_data_size: showing_releases.length
-            });
+            updateDataMySon({});
         })
         
         //switch between light and dark themes
@@ -517,5 +502,48 @@ $(document).ready(function() {
             $('#light-telemetry').attr({href : 'css/telemetry.css'});
             return false;
         })
+    }
+    
+    //update data
+    function updateDataMySon(options) {
+        //don't show years for build ids or if we explicitly pass that in as an option
+        var show_years = (options.show_years == false 
+            || global.options['show-evolution-over'] == 'build-ids')
+                ? false
+                : true;
+                    
+        //call moz_chart, taking into consideration options and filters that 
+        //the user has set
+        moz_chart({
+            title: "Submissions",
+            description: "The number of submissions for the chosen measure.",
+            data: filterOutDisabledReleases(),
+            width: 700,
+            height: 400,
+            right: 10,
+            area: false,
+            target: '#main-chart',
+            show_years: show_years,
+            markers: markers,
+            x_extended_ticks: true,
+            y_extended_ticks: true,
+            xax_tick: 0,
+            x_accessor: 'date',
+            y_accessor: 'value',
+            xax_format: function(d) {
+                if(global.options['show-evolution-over'] == 'build-ids') {
+                    //use build ids instead of dates
+                    var df = d3.time.format('%Y%m%d');
+                    return df(d);
+                }
+                else if(global.options['show-evolution-over'] == 'calendar-dates') {
+                    //use calendar rates instead
+                    var df = d3.time.format('%b %d');
+                    return df(d);
+                }
+            },
+            custom_line_color_map: customerLineToColorMap(),
+            max_data_size: showing_releases.length
+        });
     }
 })// end document.ready
