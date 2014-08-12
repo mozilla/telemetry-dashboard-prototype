@@ -1,6 +1,6 @@
 .line1-legend-box-color {
-    background-color: #ffd300;
-    border-color: #ffd300;
+    background-color: #a5d2f7;
+    border-color: #a5d2f7;
 }
 
 .line2-legend-box-color {
@@ -14,12 +14,12 @@
 }
 
 .line1-color {
-    stroke: #ffd300;
+    stroke: #a5d2f7;
 }
 
 .area1-color,
 .line1-legend-box-color {
-    fill: #ffd300;
+    fill: #a5d2f7;
 }
 
 .legend .btn-group .btn, 

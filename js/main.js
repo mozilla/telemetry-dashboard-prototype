@@ -514,6 +514,11 @@ $(document).ready(function() {
             || global.options['show-evolution-over'] == 'build-ids')
                 ? false
                 : true;
+                
+        var x_label = (options.x_label !== undefined 
+            || global.options['show-evolution-over'] == 'build-ids')
+                ? 'Build IDs'
+                : '';
                     
         //call moz_chart, taking into consideration options and filters that 
         //the user has set
@@ -530,6 +535,7 @@ $(document).ready(function() {
             markers: markers,
             x_extended_ticks: true,
             y_extended_ticks: true,
+            x_label: x_label,
             xax_tick: 0,
             x_accessor: 'date',
             y_accessor: 'value',

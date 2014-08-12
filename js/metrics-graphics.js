@@ -95,7 +95,7 @@ function moz_chart() {
 function chart_title(args) {
     //is chart title different than existing, if so, clear the fine 
     //gentleman, otherwise, move along
-    if(args.title !== $(args.target + ' h2.chart_title').text())
+    if(args.title && args.title !== $(args.target + ' h2.chart_title').text())
         $(args.target + ' h2.chart_title').remove();
     else
         return;
@@ -539,11 +539,7 @@ function init(args) {
             var lines_to_remove = arrDiff(
                 array_full_series(args.max_data_size), 
                 args.custom_line_color_map);
-        
-            console.log("array_full_series: ", array_full_series(args.max_data_size));
-            console.log("args.custom_line_color_map: ", args.custom_line_color_map);
-            console.log("lines to remove: " + lines_to_remove);
-            
+
             for(var i=0; i<lines_to_remove.length; i++) {
                 $(args.target + ' svg .main-line.line' + lines_to_remove[i] + '-color')
                     .remove();
@@ -688,7 +684,6 @@ charts.line = function(args) {
             if(args.custom_line_color_map.length > 0) {
                 line_id = args.custom_line_color_map[i];
             }
-            console.log(args.custom_line_color_map, i, "line_id --->", line_id);
         
             //add confidence band
             if(args.show_confidence_band) {
@@ -700,7 +695,7 @@ charts.line = function(args) {
             //add the area
             if(args.area && !args.y_axis_negative && args.data.length <= 1) {
                 //if area already exists, transition it
-                if($(args.target + ' svg path.area' + (line_id+1) + '-color').length > 0) {
+                if($(args.target + ' svg path.area' + (line_id) + '-color').length > 0) {
                     d3.selectAll(args.target + ' svg path.area' + (line_id) + '-color')
                         .transition()
                             .duration(function() {
@@ -714,7 +709,7 @@ charts.line = function(args) {
                         .attr('d', area(args.data[i]));
                 }
             }
-                            
+
             //add the line, if it already exists, transition the fine gentleman
             if($(args.target + ' svg path.line' + (line_id) + '-color').length > 0) {
                 d3.selectAll(args.target + ' svg path.line' + (line_id) + '-color')
