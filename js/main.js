@@ -41,7 +41,7 @@ $(document).ready(function() {
     
     //annotations
     var markers = [{
-        'date': new Date('2014-06-10T00:00:00.000Z'),
+        'date': new Date('2014-06-13T00:00:00.000Z'),
         'label': 'v30 released'
     },
     {
@@ -128,7 +128,7 @@ $(document).ready(function() {
                 title: "Submissions",
                 description: "The number of submissions for the chosen measure.",
                 data: [data['sponsored_shown'],  data['affiliate_shown'], data['organic_shown']],
-                width: 700,
+                width: 500,
                 height: 400,
                 right: 10,
                 area: false,
@@ -138,6 +138,7 @@ $(document).ready(function() {
                 x_extended_ticks: true,
                 y_extended_ticks: true,
                 xax_tick: 0,
+                xax_count: 4,
                 x_accessor: 'date',
                 y_accessor: 'value'
             })
@@ -154,37 +155,33 @@ $(document).ready(function() {
     
     
     function drawHistogram(options) {
-        // Generate a Bates distribution of 10 random variables.
-        var values = d3.range(1000).map(d3.random.bates(10));
+        var title = (options.title) ? options.title : 'Histogram';
 
-        // Generate a histogram using twenty uniformly-spaced bins.
+        //generate a Bates distribution of 10 random variables
+        var values = d3.range(10000).map(d3.random.bates(10));
         var x = d3.scale.linear()
             .domain([0, 1])
             .range([0, 350 - 0 - 10]);
-    
-        var data = d3.layout.histogram()
-            .bins(x.ticks(20))
-            (values);
-            
-        var title = (options.title) ? options.title : 'Histogram';
-
+        
         moz_chart({
             title: title,
             description: "A histogram of the buckets for the chosen measure conditioned on release.",
-            data: [data],
+            data: values,
             chart_type: 'histogram',
-            width: 350,
+            width: 550,
             height: 389,
             left: 30,
             right: 10,
-            rollover_callback: function(d, i) {
-                $('#histogram svg .active_datapoint')
-                    .html('Frequency Count: ' + d.y);
-            },
             target: '#histogram',
             y_extended_ticks: true,
             xax_count: 10,
             xax_tick: 5,
+            bins: 50,
+            bar_margin: 2,
+            rollover_callback: function(d, i) {
+                $('#histogram svg .active_datapoint')
+                    .html('Value: ' + d3.round(d.x,2) +  '   Count: ' + d.y);
+            },
             x_accessor: 'x',
             y_accessor: 'y'
         })
@@ -526,7 +523,7 @@ $(document).ready(function() {
             title: "Submissions",
             description: "The number of submissions for the chosen measure.",
             data: filterOutDisabledReleases(),
-            width: 700,
+            width: 500,
             height: 400,
             right: 10,
             area: false,
@@ -537,6 +534,7 @@ $(document).ready(function() {
             y_extended_ticks: true,
             x_label: x_label,
             xax_tick: 0,
+            xax_count: 4,
             x_accessor: 'date',
             y_accessor: 'value',
             xax_format: function(d) {

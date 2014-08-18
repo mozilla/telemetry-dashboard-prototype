@@ -1,3 +1,8 @@
+.area1-color,
+.line1-legend-box-color {
+    fill: #a5d2f7;
+}
+
 .line1-legend-box-color {
     background-color: #a5d2f7;
     border-color: #a5d2f7;
@@ -15,11 +20,6 @@
 
 .line1-color {
     stroke: #a5d2f7;
-}
-
-.area1-color,
-.line1-legend-box-color {
-    fill: #a5d2f7;
 }
 
 .legend .btn-group .btn, 
@@ -41,11 +41,6 @@
     padding-bottom: 0;
 }
 
-.series-selector {
-    background-color: #202020;
-    border-color: #525151;
-}
-
 .legend a {
     color: #3b3b3b;
     text-decoration: none;
@@ -53,4 +48,9 @@
 
 .modal {
     color: #3b3b3b;
+}
+
+.series-selector {
+    background-color: #202020;
+    border-color: #525151;
 }
