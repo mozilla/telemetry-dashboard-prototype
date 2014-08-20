@@ -157,14 +157,21 @@ function xAxis(args) {
         min_x = d3.min(args.data[0], function(d){return d[args.x_accessor]});
     }
     else if (args.chart_type == 'histogram'){
-        // max_x = 1;
-        // min_x = 0;
-        max_x = d3.max(args.data[0], function(d){return d[args.x_accessor]});
         min_x = d3.min(args.data[0], function(d){return d[args.x_accessor]});
+        max_x = d3.max(args.data[0], function(d){return d[args.x_accessor]});
         
         //force override xax_format
-        //todo revisit to see if this makes sense
-        args.xax_format = function(d) { return d; };
+        //todo revisit to see if this makes sense        
+        args.xax_format = function(f) {
+            if (f < 1.0) {
+                //don't scale tiny values
+                return args.yax_units + d3.round(f, args.decimals);
+            }
+            else {
+                var pf = d3.formatPrefix(f);
+                return args.xax_units + pf.scale(f) + pf.symbol;
+            }
+        }
     }
 
     min_x = args.min_x ? args.min_x : min_x;
@@ -606,6 +613,13 @@ function init(args) {
                 .attr('width', args.width)
                 .attr('height', args.height);
     }
+
+    var svg = d3.select(args.target).selectAll('svg');
+
+    // remove missing class
+    svg.classed('missing', false);
+    // remove missing text
+    svg.selectAll('.missing-text').remove();
 
     //add chart title if it's different than existing one
     chart_title(args);
@@ -1269,8 +1283,8 @@ charts.histogram = function(args) {
             }
 
             //highlight active bar
-            $(args.target + ' svg .bar :eq(' + i + ')')
-                .css('opacity', 0.8);
+            d3.selectAll($(args.target + ' svg .bar :eq(' + i + ')'))
+                .classed('active', true);
 
             //update rollover text
             if (args.show_rollover_text) {
@@ -1301,10 +1315,10 @@ charts.histogram = function(args) {
         var svg = d3.select(args.target + ' svg');
 
         return function(d, i) {
-            //reset all bars' opacity
-            $('.histogram .bar rect')
-                .css('opacity', 1);
-
+            //reset active bar
+            d3.selectAll($(args.target + ' svg .bar :eq(' + i + ')'))
+                .classed('active', false);
+            
             //reset active data point text
             svg.select('.active_datapoint')
                 .text('');
@@ -1429,12 +1443,21 @@ charts.missing = function(args) {
     this.args = args;
 
     this.init = function(args) {
-        if($(args.target).is(':empty')){
-            chart_title(args);
-            var svg = d3.select(args.target)
-                .append('svg')
-                .attr('width', args.width)
-                .attr('height', args.height);
+        chart_title(args);
+
+        // create svg if one doesn't exist
+        d3.select(args.target).selectAll('svg').data([args])
+          .enter().append('svg')
+            .attr('width', args.width)
+            .attr('height', args.height);
+
+        // delete child elements
+        d3.select(args.target).selectAll('svg *').remove()
+
+        var svg = d3.select(args.target).select('svg')
+
+        // add missing class
+        svg.classed('missing', true);
 
         svg.append('rect')
             .attr('class', 'missing-pane')
@@ -1443,15 +1466,17 @@ charts.missing = function(args) {
             .attr('width', args.width - (args.left * 2))
             .attr('height', args.height - (args.top * 2));
 
-        svg.append('text')
+        var missing_text = 'Data currently missing or unavailable';
+
+        // add missing text
+        svg.selectAll('.missing_text').data([missing_text])
+          .enter().append('text')
+            .attr('class', 'missing-text')
             .attr('x', args.width / 2)
             .attr('y', args.height / 2)
             .attr('dy', '.50em')
             .attr('text-anchor', 'middle')
-            .text(function(d) {
-                return 'Data currently missing or unavailable';
-            })  
-        }
+            .text(missing_text)  
 
         return this;
     }
@@ -1465,14 +1490,37 @@ charts.missing = function(args) {
 function modify_time_period(data, past_n_days) {
     //splice time period
     var data_spliced = clone(data);
+    var data_filtered = [];
+
+    //set window_start based on today - past_n_days
+    var date_window_start = new Date().getTime() - (past_n_days * 24 * 60 * 60 * 1000);
+
     if(past_n_days != '') {
         for(var i=0; i<data_spliced.length; i++) {
+            data_filtered[i] = [];
+
             var from = data_spliced[i].length - past_n_days;
             data_spliced[i].splice(0,from);
+
+            //filter out data points that are beyond today - past_n_days
+            data_spliced[i].map(function(d) {
+                if(new Date(d.date).getTime() > date_window_start) {
+                    data_filtered[i].push(d);
+                }
+            });
+
+            //if this release's data is beyond our time period, show it along the 0 axis
+            if(data_filtered[i].length <= 1) {
+                //add two data points, one at the beginning, one at the end at value = 0
+                data_filtered[i].push(
+                    {date: new Date(date_window_start), line_id: i+1, value: 0},
+                    {date: new Date(), line_id: i+1, value: 0}
+                );
+            }
         }
     }
 
-    return data_spliced;
+    return data_filtered;
 }
 
 function convert_dates(data, x_accessor) {

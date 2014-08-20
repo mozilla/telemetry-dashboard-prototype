@@ -3,41 +3,25 @@
 $(document).ready(function() {
     //for use with time-period controls
     var split_by_data;
+
+    //telemetry data for a subset of channels/versions for a chosen measure
+    var telemetry_data = new Array();
     
-    //default time period (2 months)
-    var past_n_days = 61;
-    
-    //style dropdowns
-    $("select").select2();
+    //default time period (12 months)
+    var past_n_days = 365;
     
     var global = {};
     global.options = {
-        'show-evolution-over': 'calendar-dates'
+        'show-evolution-over': 'calendar-dates',
+        'selected_measure': ''
     }
-
-    //load dummy data from telemetry
-    var filter_before = new Date('2014-05-14');
-    var telemetry_loaded = {
-        'clicks': false,
-        'organic': false,
-        'affiliate': false,
-        'sponsored': false
-    };
-
-    var telemetry_data = {
-        'organic_clicks': [],
-        'affiliate_clicks': [], 
-        'sponsored_clicks': [], 
-        'organic_shown': [],
-        'affiliate_shown': [],
-        'sponsored_shown': []};
 
     //array since we'll want it to be int-indexed (order is significant)
     var showing_releases = [
-        'beta32',
-        'beta31',
-        'beta30'
-    ]
+        'nightly/34',
+        'nightly/33',
+        'nightly/32'
+    ];
     
     //annotations
     var markers = [{
@@ -50,84 +34,79 @@ $(document).ready(function() {
     }];
 
     Telemetry.init(function() {
-        var dformat = d3.time.format('%Y-%m-%d');
-
         var versions = Telemetry.versions();
-        var version = 'nightly/33';
+        console.log(versions);
+        
+        //todo get default version on first-load
+        var version = showing_releases[0];
 
-        Telemetry.measures(version,function(measures) {
-            //var measure = 'NEWTAB_PAGE_DIRECTORY_TYPE_CLICKED-by-submission-date'
-            var clicked = 'NEWTAB_PAGE_DIRECTORY_TYPE_CLICKED';
-            var sponsored = 'NEWTAB_PAGE_DIRECTORY_SPONSORED_SHOWN';
-            var affiliate = 'NEWTAB_PAGE_DIRECTORY_AFFILIATE_SHOWN';
-            var organic = 'NEWTAB_PAGE_DIRECTORY_ORGANIC_SHOWN';
-            var backwards = {
-                'NEWTAB_PAGE_DIRECTORY_SPONSORED_SHOWN':'sponsored', 
-                'NEWTAB_PAGE_DIRECTORY_AFFILIATE_SHOWN': 'affiliate',
-                'NEWTAB_PAGE_DIRECTORY_ORGANIC_SHOWN': 'organic'
-            };
-                
-            if (measures['NEWTAB_PAGE_DIRECTORY_TYPE_CLICKED'] === undefined) {
+        Telemetry.measures(version, function(measures) {
+            //turn into an array
+            var measures_arr = d3.entries(measures);
+             
+            //sort measures
+            measures_arr.sort(function(a, b) {
+                if (a.key.toLowerCase() < b.key.toLowerCase()) return -1;
+                if (a.key.toLowerCase() > b.key.toLowerCase()) return 1;
+                return 0;
+            });
+
+            //populate dropdown with measures
+            var options = $(".measure");
+            $.each(measures_arr, function(i, d) {
+                options.append($("<option />").val(d.key).text(d.key));
+            });
+
+            //set selected measure
+            global.options['selected_measure'] = measures_arr[0].key;
+
+            //style dropdowns
+            $("select").select2();
+
+            //check that selected measure is valid
+            if (measures[global.options['selected_measure']] === undefined) {
                 return;
             }
 
-            Telemetry.loadEvolutionOverTime(version, clicked,
-                                                  function(histogramEvolution) {
-                histogramEvolution.each(function(date, histogram) {
-                    histogram.map(function(count, start, end, index) {
-                        var which = start == 0 ? 'sponsored' : (start == 1 ? 'affiliate' : (start == 2 ? 'organic' : null));
-                        if (which && date >= filter_before){
-                            telemetry_data[which + '_clicks'].push({'date': date, 'value': count});
-                        }
-                    });
-                });            
-            });
+            //get evolution data for all three versions
+            for(var i=0; i<showing_releases.length; i++) {
+                var version = showing_releases[i];
 
-            telemetry_loaded['clicks'] = true;
-            check_everything(telemetry_data);
-            var fff = d3.time.format('%Y-%m-%d');
-            var total={'sponsored':0, 'affiliate':0, 'organic':0};
-            var all =[['sponsored', sponsored], ['affiliate', affiliate], ['organic', organic]];
-
-            function pull_measure(measure){
-                Telemetry.loadEvolutionOverTime(version, measure, function(histogramEvolution) {
-                    var full_measure = histogramEvolution.measure();
-                    var mm = backwards[histogramEvolution.measure()];
-
-                    histogramEvolution.each(function(date, histogram,j) {
-                        if (date >= filter_before){
-                            var total = 0;
-                            var mm = backwards[histogram.measure()];
-                            histogram.each(function(count, start, end, index) {
-                                total += count * index;
-                            });
-                            telemetry_data[mm + '_shown'].push({'date':date, 'value': total, 'type': mm});
-                        }
-                    });
-                    telemetry_loaded[mm] = true;
-                    // my hacky version of checking for multiple things to finish before trying to plot data.
-                    check_everything(telemetry_data);
-                });                
-            }
-            pull_measure(all[0][1]);
-            pull_measure(all[1][1]);
-            pull_measure(all[2][1]);
+                Telemetry.loadEvolutionOverTime(version, global.options['selected_measure'], function(histogramEvolution) {
+	                var data = [];
+	                histogramEvolution.each(function(date, histogram) {
+	                    var total = 0;
+	                    histogram.map(function(count, start, end, index) {
+	                        total += count * index;
+	                    });
+	                    
+	                    data.push({'date': date, 'value': total});
+	                    
+	                });
+	                
+	                //add this release's time-series data to telemetry_data
+	                telemetry_data.push(data);
+	                
+	                //only plot, when we have the data for all releases loaded
+	                check_everything(telemetry_data);
+	            });
+	        }
         })
-
+        
+        //only plot, when we have the data for all releases loaded
         function check_everything(data) {
-            if (telemetry_loaded.clicks && telemetry_loaded.organic && telemetry_loaded.affiliate && telemetry_loaded.sponsored) {
+            if (data.length == 3) {
                 plot_it(data);
             }
         }
 
+        //draw evolution chart on first-load
         function plot_it(data){
-            assignEventListeners();
-            
             //draw the chart on first-load
             split_by_data = moz_chart({
                 title: "Submissions",
                 description: "The number of submissions for the chosen measure.",
-                data: [data['sponsored_shown'],  data['affiliate_shown'], data['organic_shown']],
+                data: data,
                 width: 500,
                 height: 400,
                 right: 10,
@@ -146,14 +125,16 @@ $(document).ready(function() {
         
         //draw histogram
         //todo change this
-        drawHistogram({title: 'Beta 32'});
+        drawHistogram({title: showing_releases[0]});
         
         //default color for histogram
         d3.selectAll(".bar rect")
             .classed('area1-color', true);
     })// end Telemetry.init
     
+    assignEventListeners();
     
+    //draw histogram
     function drawHistogram(options) {
         var title = (options.title) ? options.title : 'Histogram';
 
@@ -187,19 +168,7 @@ $(document).ready(function() {
         })
     }
     
-    //todo, for dummy data only
-    function fake_lookup(release) {
-        switch(release) {
-            case 'beta32':
-                return 'sponsored_shown';
-            case 'beta31':
-                return 'affiliate_shown';
-            case 'beta30':
-                return 'organic_shown';
-        }
-    }
-    
-    //todo, just for dummy data only
+    //remove disabled lines from the chart
     function filterOutDisabledReleases() {
         var data = [];
         
@@ -208,11 +177,11 @@ $(document).ready(function() {
                 continue;
             }
 
-            var id = fake_lookup(showing_releases[i]); //todo, judge me not, world
-            data.push(telemetry_data[id]);
+            data.push(telemetry_data[i]);
         }
         
         //check if we need to constrain by time before returning
+        //we need to constrain by past_n_days of latest release only
         data = modify_time_period(data, past_n_days)
 
         return data;
@@ -453,14 +422,7 @@ $(document).ready(function() {
         $('.modify-time-period-controls button').click(function() {
             //update our time period global variable
             past_n_days = $(this).data('time_period');
-            
-            //modify time periods of our lines
-            var data = modify_time_period(split_by_data, past_n_days);
-            
-            //TODO
-            //data is the spliced version
-            //need to combine this with filterOutDisabledReleases()
-            
+
             //change button state
             $(this).addClass('active')
                 .siblings()
@@ -544,7 +506,7 @@ $(document).ready(function() {
                     return df(d);
                 }
                 else if(global.options['show-evolution-over'] == 'calendar-dates') {
-                    //use calendar rates instead
+                    //use calendar dates instead
                     var df = d3.time.format('%b %d');
                     return df(d);
                 }

@@ -12,7 +12,7 @@
 
 .area1-color,
 .bar rect.area1-color {
-    fill: #0000ff;
+    fill: #6db3ed;
 }
 
 .area2-color,
@@ -83,6 +83,18 @@
     margin-top: 0px;
 }
 
+.histogram .bar rect.area1-color.active {
+    fill: #4193d6;
+}
+
+.histogram .bar rect.area2-color.active {
+    fill: #089565;
+}
+
+.histogram .bar rect.area3-color.active {
+    fill: #d18f0e;
+}
+
 .legend .btn-group .btn,
 .legend .btn-group .btn:focus {
     color: white;
@@ -107,7 +119,7 @@
 }
 
 .line1-legend-color {
-    color: #0000ff;
+    color: #6db3ed;
 }
 
 .line2-legend-color {
@@ -119,8 +131,8 @@
 }
 
 .line1-legend-box-color {
-    background-color: #0000ff;
-    border-color: #0000ff;
+    background-color: #6db3ed;
+    border-color: #6db3ed;
 }
 
 .line2-legend-box-color {
@@ -134,7 +146,11 @@
 }
 
 .line1-color {
-    stroke: #4040e8;
+    stroke: #6db3ed;
+}
+
+.line2-color {
+    stroke: #05b378;
 }
 
 .line3-color {

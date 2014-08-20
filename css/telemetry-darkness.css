@@ -3,6 +3,18 @@
     fill: #a5d2f7;
 }
 
+.histogram .bar rect.area1-color.active {
+    fill: #8aaecb;
+}
+
+.histogram .bar rect.area2-color.active {
+    fill: #16c105;
+}
+
+.histogram .bar rect.area3-color.active {
+    fill: #ad7507;
+}
+
 .line1-legend-box-color {
     background-color: #a5d2f7;
     border-color: #a5d2f7;

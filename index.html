@@ -59,11 +59,6 @@
                         </div>
                         <div>
                             <select class="measure">
-                                <option value="A11Y_ISIMPLEDOM_USAGE_FLAG">A11Y_ISIMPLEDOM_USAGE_FLAG</option>
-                                <option value="A11Y_CONSUMERS">A11Y_CONSUMERS</option>
-                                <option value="A11Y_IATABLE_USAGE_FLAG">A11Y_IATABLE_USAGE_FLAG</option>
-                                <option value="A11Y_INSTANTIATED_FLAG">A11Y_INSTANTIATED_FLAG</option>
-                                <option value="A11Y_UPDATE_TIME">A11Y_UPDATE_TIME</option>
                             </select>
                         </div>
                         <div class="advanced-filter">
@@ -89,7 +84,7 @@
                             <div class='col-lg-6 gr time-period'>
                                 <div class="btn-group btn-group-xs text-center modify-time-period-controls">
                                     <button type="button" class="btn btn-default active"
-                                        data-time_period="61">Past 2 months</button>
+                                        data-time_period="365">Past year</button>
                                     <button type="button" class="btn btn-default"
                                         data-time_period="31">Past month</button>
                                     <button type="button" class="btn btn-default"
@@ -100,35 +95,35 @@
                             <!-- Active releases -->
                             <div class='col-lg-6 gr legend'>
                                 <div class="btn-group">
-                                    <button type="button" data-release="beta32" data-sequence="1" class="line1-legend-box-color btn btn-xs btn-release">Beta 32</button>
+                                    <button type="button" data-release="nightly/34" data-sequence="1" class="line1-legend-box-color btn btn-xs btn-release">nightly/34</button>
                                     <button type="button" class="line1-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li class='disable-enable' data-release="beta32" data-sequence="1"><a href="#">Disable</a></li>
-                                        <li class='change' data-release="beta32" data-sequence="1"><a href="#">Change</a></li>
+                                        <li class='disable-enable' data-release="nightly/34" data-sequence="1"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly/34" data-sequence="1"><a href="#">Change</a></li>
                                     </ul>
                                 </div>
                                 
                                 <div class="btn-group">
-                                    <button type="button" data-release="2" data-sequence="2" class="line2-legend-box-color btn btn-xs btn-release">Beta 31</button>
+                                    <button type="button" data-release="2" data-sequence="2" class="line2-legend-box-color btn btn-xs btn-release">nightly/33</button>
                                     <button type="button" class="line2-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li class='disable-enable' data-release="beta31" data-sequence="2"><a href="#">Disable</a></li>
-                                        <li class='change' data-release="beta31" data-sequence="2"><a href="#">Change</a></li>
+                                        <li class='disable-enable' data-release="nightly/33" data-sequence="2"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly/33" data-sequence="2"><a href="#">Change</a></li>
                                     </ul>
                                 </div>
                                 
                                 <div class="btn-group">
-                                    <button type="button" data-release="beta30" data-sequence="3" class="line3-legend-box-color btn btn-xs btn-release">Beta 30</button>
+                                    <button type="button" data-release="nightly/32" data-sequence="3" class="line3-legend-box-color btn btn-xs btn-release">nightly/32</button>
                                     <button type="button" class="line3-legend-box-color btn btn-xs dropdown-toggle btn-release-options" data-toggle="dropdown">
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li class='disable-enable' data-release="beta30" data-sequence="3"><a href="#">Disable</a></li>
-                                        <li class='change' data-release="beta30" data-sequence="3"><a href="#">Change</a></li>
+                                        <li class='disable-enable' data-release="nightly/32" data-sequence="3"><a href="#">Disable</a></li>
+                                        <li class='change' data-release="nightly/32" data-sequence="3"><a href="#">Change</a></li>
                                     </ul>
                                 </div>
                                 
@@ -140,7 +135,7 @@
         </div>
         
         <div id='footer'>
-            <a href="http://metricsgraphicsjs.org">MetricsGraphics.js 0.2</a>
+            <a href="http://metricsgraphicsjs.org">MetricsGraphics.js 0.3</a>
             <br />2014 &middot; Shared under a <a href="http://www.mozilla.org/MPL/2.0/">
             Mozilla Public License</a>
             <br /><a href="https://github.com/mozilla/metrics-graphics">
@@ -158,9 +153,9 @@
         <h2>Choose a different release</h2>
         
         <select class="releases-dropdown">
-            <option value="beta32">Beta 32</option>
-            <option value="beta31">Beta 31</option>
-            <option value="beta30">Beta 30</option>
+            <option value="nightly/34">Beta 32</option>
+            <option value="nightly/33">Beta 31</option>
+            <option value="nightly/32">Beta 30</option>
             <option value="beta29">Beta 29</option>
             <option value="beta28">Beta 28</option>
         </select>
