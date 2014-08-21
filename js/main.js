@@ -178,7 +178,7 @@ $(document).ready(function() {
                     width: 550,
                     height: 389,
                     left: 40,
-                    right: 40,
+                    right: 30,
                     y_scale_type: 'log',
                     target: '#histogram',
                     y_extended_ticks: true,

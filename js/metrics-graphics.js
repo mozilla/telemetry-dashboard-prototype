@@ -1216,7 +1216,7 @@ charts.histogram = function(args) {
         svg.append('text')
             .attr('class', 'active_datapoint')
             .attr('xml:space', 'preserve')
-            .attr('x', args.width - args.right)
+            .attr('x', args.width)
             .attr('y', args.top / 2)
             .attr('text-anchor', 'end');
 
