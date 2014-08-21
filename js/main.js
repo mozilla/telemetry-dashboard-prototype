@@ -33,17 +33,18 @@ $(document).ready(function() {
         'label': 'v31 released'
     }];
 
+    //populate dropdown on first-load
     Telemetry.init(function() {
         var versions = Telemetry.versions();
         console.log(versions);
-        
-        //todo get default version on first-load
-        var version = showing_releases[0];
 
+        //get one of the versions (todo)
+        var version = showing_releases[0];
+            
         Telemetry.measures(version, function(measures) {
             //turn into an array
             var measures_arr = d3.entries(measures);
-             
+
             //sort measures
             measures_arr.sort(function(a, b) {
                 if (a.key.toLowerCase() < b.key.toLowerCase()) return -1;
@@ -57,82 +58,98 @@ $(document).ready(function() {
                 options.append($("<option />").val(d.key).text(d.key));
             });
 
-            //set selected measure
-            global.options['selected_measure'] = measures_arr[0].key;
-
             //style dropdowns
             $("select").select2();
+        });
+    });
 
-            //check that selected measure is valid
-            if (measures[global.options['selected_measure']] === undefined) {
-                return;
-            }
-
-            //get evolution data for all three versions
-            for(var i=0; i<showing_releases.length; i++) {
-                var version = showing_releases[i];
-
-                Telemetry.loadEvolutionOverTime(version, global.options['selected_measure'], function(histogramEvolution) {
-	                var data = [];
-	                histogramEvolution.each(function(date, histogram) {
-	                    var total = 0;
-	                    histogram.map(function(count, start, end, index) {
-	                        total += count * index;
-	                    });
-	                    
-	                    data.push({'date': date, 'value': total});
-	                    
-	                });
-	                
-	                //add this release's time-series data to telemetry_data
-	                telemetry_data.push(data);
-	                
-	                //only plot, when we have the data for all releases loaded
-	                check_everything(telemetry_data);
-	            });
-	        }
-        })
-        
-        //only plot, when we have the data for all releases loaded
-        function check_everything(data) {
-            if (data.length == 3) {
-                plot_it(data);
-            }
-        }
-
-        //draw evolution chart on first-load
-        function plot_it(data){
-            //draw the chart on first-load
-            split_by_data = moz_chart({
-                title: "Submissions",
-                description: "The number of submissions for the chosen measure.",
-                data: data,
-                width: 500,
-                height: 400,
-                right: 10,
-                area: false,
-                target: '#main-chart',
-                show_years: true,
-                markers: markers,
-                x_extended_ticks: true,
-                y_extended_ticks: true,
-                xax_tick: 0,
-                xax_count: 4,
-                x_accessor: 'date',
-                y_accessor: 'value'
-            })
-        }
-        
-        //draw histogram
-        //todo change this
-        drawHistogram({title: showing_releases[0]});
-        
-        //default color for histogram
-        d3.selectAll(".bar rect")
-            .classed('area1-color', true);
-    })// end Telemetry.init
-    
+    //draw charts and assign event listeners and that's about it
+    drawCharts();
     assignEventListeners();
+    
+    
+    //draw histogram and line chart
+    function drawCharts() {
+        telemetry_data = new Array();
+        
+        Telemetry.init(function() {
+            var versions = Telemetry.versions();
+
+            //get one of the versions (todo)
+            var version = showing_releases[0];
+
+            Telemetry.measures(version, function(measures) {
+                //set selected measure
+                global.options['selected_measure'] = $(".measure option:selected").text();
+
+                //check that selected measure is valid
+                if (measures[global.options['selected_measure']] === undefined) {
+                    return;
+                }
+
+                //get evolution data for all three versions
+                for(var i=0; i<showing_releases.length; i++) {
+                    var version = showing_releases[i];
+
+                    Telemetry.loadEvolutionOverTime(version, global.options['selected_measure'], function(histogramEvolution) {
+                        var data = [];
+                        histogramEvolution.each(function(date, histogram) {
+                            var total = 0;
+                            histogram.map(function(count, start, end, index) {
+                                total += count * index;
+                            });
+                            
+                            data.push({'date': date, 'value': total});
+                            
+                        });
+                        
+                        //add this release's time-series data to telemetry_data
+                        telemetry_data.push(data);
+                        
+                        //only plot, when we have the data for all releases loaded
+                        check_everything(telemetry_data);
+                    });
+                }
+            })
+            
+            //only plot, when we have the data for all releases loaded
+            function check_everything(data) {
+                if (data.length == 3) {
+                    plot_it(data);
+                }
+            }
+
+            //draw evolution chart
+            function plot_it(data) {console.log(data);
+                //draw the chart on first-load
+                split_by_data = moz_chart({
+                    title: "Submissions",
+                    description: "The number of submissions for the chosen measure.",
+                    data: data,
+                    width: 500,
+                    height: 400,
+                    right: 10,
+                    area: false,
+                    target: '#main-chart',
+                    show_years: true,
+                    markers: markers,
+                    x_extended_ticks: true,
+                    y_extended_ticks: true,
+                    xax_tick: 0,
+                    xax_count: 4,
+                    x_accessor: 'date',
+                    y_accessor: 'value'
+                })
+            }
+            
+            //draw histogram
+            drawHistogram({title: showing_releases[0]});
+            
+            //default color for histogram
+            d3.selectAll(".bar rect")
+                .classed('area1-color', true);
+        })// end Telemetry.init
+    }
     
     //draw histogram
     function drawHistogram(options) {
@@ -310,6 +327,9 @@ $(document).ready(function() {
         $('.measure').click(function () {
             var chosen_measure = $(this).val();
             console.log(chosen_measure);
+            
+            //redraw histogram and line chart
+            drawCharts();
         });
         
         //preferences

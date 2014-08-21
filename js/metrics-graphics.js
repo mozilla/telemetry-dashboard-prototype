@@ -1495,6 +1495,11 @@ function modify_time_period(data, past_n_days) {
     //set window_start based on today - past_n_days
     var date_window_start = new Date().getTime() - (past_n_days * 24 * 60 * 60 * 1000);
 
+    //get yesterday's date
+    var yesterday = new Date();
+    yesterday.setHours(0);
+    yesterday.setDate(yesterday.getDate() - 1);
+
     if(past_n_days != '') {
         for(var i=0; i<data_spliced.length; i++) {
             data_filtered[i] = [];
@@ -1511,10 +1516,10 @@ function modify_time_period(data, past_n_days) {
 
             //if this release's data is beyond our time period, show it along the 0 axis
             if(data_filtered[i].length <= 1) {
-                //add two data points, one at the beginning, one at the end at value = 0
+                //add two data points, one at the beginning, one yesterday with value=0
                 data_filtered[i].push(
                     {date: new Date(date_window_start), line_id: i+1, value: 0},
-                    {date: new Date(), line_id: i+1, value: 0}
+                    {date: yesterday, line_id: i+1, value: 0}
                 );
             }
         }
