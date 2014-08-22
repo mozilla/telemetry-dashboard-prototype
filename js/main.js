@@ -1,6 +1,18 @@
 'use strict';
 
 $(document).ready(function() {
+    //todo don't hard-code
+    //array since we'll want it to be int-indexed (order is significant)
+    var showing_releases = [
+        'nightly/32',
+        'nightly/33',
+        'nightly/34'
+    ];
+    //todo don't hard-code
+    var selected_release = 'nightly/34',
+        selected_release_seq = 3;
+
+
     //telemetry data for a subset of channels/versions for a chosen measure
     var telemetry_data = new Array();
 
@@ -11,13 +23,6 @@ $(document).ready(function() {
     global.options = {
         'show-evolution-over': 'calendar-dates',
     }
-
-    //array since we'll want it to be int-indexed (order is significant)
-    var showing_releases = [
-        'nightly/32',
-        'nightly/33',
-        'nightly/34'
-    ];
 
     //annotations
     var markers = [{
@@ -35,7 +40,7 @@ $(document).ready(function() {
 
         //get one of the versions (todo)
         var version = showing_releases[showing_releases.length-1];
-            
+
         Telemetry.measures(version, function(measures) {
             //turn into an array
             var measures_arr = d3.entries(measures);
@@ -119,7 +124,7 @@ $(document).ready(function() {
 
             //draw histogram
             setTimeout(function() {
-                drawHistogram({title: showing_releases[0], sequence: 1});
+                drawHistogram({title: selected_release, sequence: selected_release_seq});
             }, 50);
 
             //default color for histogram
@@ -304,6 +309,10 @@ $(document).ready(function() {
         //switch to release
         $('.btn-release').click(function () {
             var chosen_i = $(this).data('sequence')
+            
+            //for when we redraw the histogram on measure change
+            selected_release = $(this).text();
+            selected_release_seq = chosen_i;
 
             //if button is disabled, all bets are off
             if($(this).attr('class') == 'disabled')
