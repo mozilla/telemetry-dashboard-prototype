@@ -154,6 +154,13 @@ $(document).ready(function() {
                 var y_scale_type = (histogram.kind() == 'exponential')
                         ? 'log'
                         : 'linear';
+                        
+                //if histogram is exponential, use log scale
+                var xax_count = (histogram.kind() == 'flag' || histogram.kind() == 'boolean')
+                        ? 2
+                        : 10;
+                        
+                console.log(histogram.kind());
 
                 //draw the histogram
                 moz_chart({
@@ -168,7 +175,7 @@ $(document).ready(function() {
                     y_scale_type: y_scale_type,
                     target: '#histogram',
                     y_extended_ticks: true,
-                    xax_count: 10,
+                    xax_count: xax_count,
                     xax_tick: 5,
                     bar_margin: 0,
                     binned: true,
