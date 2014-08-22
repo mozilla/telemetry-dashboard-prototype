@@ -640,7 +640,7 @@ function init(args) {
     //moz_chart() on the same target with 2 lines, remove the 3rd line
     if(args.data.length < $(args.target + ' svg .main-line').length) {
         //now, the thing is we can't just remove, say, line3 if we have a custom
-        //line-color map, instead, see which are the lines to be removed, and delete those    
+        //line-color map, instead, see which are the lines to be removed, and delete those 
         if(args.custom_line_color_map.length > 0) {
             var array_full_series = function(len) {
                 var arr = new Array(len);

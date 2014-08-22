@@ -1,9 +1,6 @@
 'use strict';
 
 $(document).ready(function() {
-    //for use with time-period controls
-    var split_by_data;
-
     //telemetry data for a subset of channels/versions for a chosen measure
     var telemetry_data = new Array();
 
@@ -17,9 +14,9 @@ $(document).ready(function() {
 
     //array since we'll want it to be int-indexed (order is significant)
     var showing_releases = [
-        'nightly/34',
+        'nightly/32',
         'nightly/33',
-        'nightly/32'
+        'nightly/34'
     ];
 
     //annotations
@@ -37,7 +34,7 @@ $(document).ready(function() {
         var versions = Telemetry.versions();
 
         //get one of the versions (todo)
-        var version = showing_releases[0];
+        var version = showing_releases[showing_releases.length-1];
             
         Telemetry.measures(version, function(measures) {
             //turn into an array
@@ -77,8 +74,6 @@ $(document).ready(function() {
             //get evolution data for all three versions, regardless of whether or not
             //they're enabled, we'll be filtering them out later
             $.each(selectedReleases(), function(i, version) {
-                console.log(version);
-                
                 //get measures for this version
                 Telemetry.measures(version, function(measures) {
                     //check that selected measure is valid
@@ -132,24 +127,7 @@ $(document).ready(function() {
                 console.log(data);
                 
                 //draw the chart on first-load
-                split_by_data = moz_chart({
-                    title: "Submissions",
-                    description: "The number of submissions for the chosen measure.",
-                    data: filterOutDisabledReleases(), //i think i need to add a call to filter...() here
-                    width: 500,
-                    height: 400,
-                    right: 10,
-                    area: false,
-                    target: '#main-chart',
-                    show_years: true,
-                    markers: markers,
-                    x_extended_ticks: true,
-                    y_extended_ticks: true,
-                    xax_tick: 0,
-                    xax_count: 4,
-                    x_accessor: 'date',
-                    y_accessor: 'value'
-                })
+                updateDataMySon({});
             }
 
             //draw histogram
@@ -170,6 +148,7 @@ $(document).ready(function() {
         
         Telemetry.init(function() {
             //get evolution data for the selected version
+            console.log("drawing histogram: ", version, selected_measure);
             Telemetry.loadEvolutionOverTime(version, selected_measure, function(histogramEvolution) {
                 var data = [];
                 var histogram = histogramEvolution.range();
@@ -219,15 +198,17 @@ $(document).ready(function() {
         })
     }
 
-    //get selected releases
+    //get selected releases, regardless of whether or not they're enabled
     function selectedReleases() {
         var data = [];
         
         $(".btn-release").each(function(i,d) {
             data.push($(d).data('release'));
         })
-        
+
         console.log("selected releases: ", data);
+        console.log("showing releases: ", showing_releases);
+        
         return data;
     }
     
@@ -269,6 +250,7 @@ $(document).ready(function() {
             j++;
         }
 
+        console.log("customerlinetocolormap: ", data);
         return data;
     }
 

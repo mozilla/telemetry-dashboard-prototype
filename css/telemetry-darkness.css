@@ -4,15 +4,15 @@
 }
 
 .histogram .bar rect.area1-color.active {
-    fill: #8aaecb;
+    fill: #a5d2f7;
 }
 
 .histogram .bar rect.area2-color.active {
-    fill: #16c105;
+    fill: #18ff00;
 }
 
 .histogram .bar rect.area3-color.active {
-    fill: #ad7507;
+    fill: #e99d09;
 }
 
 .line1-legend-box-color {
@@ -32,6 +32,10 @@
 
 .line1-color {
     stroke: #a5d2f7;
+}
+
+.line2-color {
+    stroke: #18ff00;
 }
 
 .legend .btn-group .btn, 
