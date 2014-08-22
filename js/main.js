@@ -71,19 +71,23 @@ $(document).ready(function() {
         telemetry_data = new Array();
 
         Telemetry.init(function() {
-            //get evolution data for all three versions
-            $.each(showing_releases, function(i, version) {
+            //set selected measure
+            var selected_measure = $(".measure option:selected").text();
+        
+            //get evolution data for all three versions, regardless of whether or not
+            //they're enabled, we'll be filtering them out later
+            $.each(selectedReleases(), function(i, version) {
+                console.log(version);
+                
                 //get measures for this version
                 Telemetry.measures(version, function(measures) {
-                    //set selected measure
-                    var selected_measure = $(".measure option:selected").text();
-
                     //check that selected measure is valid
                     if (measures[selected_measure] === undefined) {
                         return;
                     }
 
-                    Telemetry.loadEvolutionOverTime(version, selected_measure, function(histogramEvolution) {
+                    Telemetry.loadEvolutionOverTime(version, selected_measure, 
+                                function(histogramEvolution) {
                         var data = [];
 
                         histogramEvolution.each(function(date, histogram) {
@@ -107,9 +111,20 @@ $(document).ready(function() {
 
             //only plot, when we have the data for all releases loaded
             function check_everything(data) {
-                if (data.length == showing_releases.length) {
+                if (data.length == selectedReleases().length) {
                     plot_it(data);
                 }
+            }
+            
+            //get count of enabled releases
+            function numberOfEnabledReleases() {
+                var count = 0;
+                $.each(showing_releases, function(i, d) {
+                    if(d != "")
+                        count++;
+                })
+
+                return count;
             }
 
             //draw evolution chart
@@ -120,7 +135,7 @@ $(document).ready(function() {
                 split_by_data = moz_chart({
                     title: "Submissions",
                     description: "The number of submissions for the chosen measure.",
-                    data: data,
+                    data: filterOutDisabledReleases(), //i think i need to add a call to filter...() here
                     width: 500,
                     height: 400,
                     right: 10,
@@ -163,9 +178,9 @@ $(document).ready(function() {
                 histogram.each(function(count, start, end, index) {
                     data[index] = {x: index, y: count};
                 });
-                
-                var y_scale_type = 
-                    (histogram.kind() == 'enumerated' || histogram.kind() == 'exponential')
+
+                //if histogram is exponential, use log scale
+                var y_scale_type = (histogram.kind() == 'exponential')
                         ? 'log'
                         : 'linear';
 
@@ -178,17 +193,19 @@ $(document).ready(function() {
                     width: 550,
                     height: 389,
                     left: 40,
-                    right: 30,
-                    y_scale_type: 'log',
+                    right: 40,
+                    y_scale_type: y_scale_type,
                     target: '#histogram',
                     y_extended_ticks: true,
                     xax_count: 10,
                     xax_tick: 5,
-                    bar_margin: 2,
+                    bar_margin: 0,
                     binned: true,
                     rollover_callback: function(d, i) {
+                        var format = d3.format("0,000");
+
                         $('#histogram svg .active_datapoint')
-                            .html('Value: ' + d3.round(d.x,2) +  '   Count: ' + d.y);
+                            .html('Value: ' + d3.round(d.x,2) +  '   Count: ' + format(d.y));
                     },
                     x_accessor: 'x',
                     y_accessor: 'y'
@@ -202,6 +219,18 @@ $(document).ready(function() {
         })
     }
 
+    //get selected releases
+    function selectedReleases() {
+        var data = [];
+        
+        $(".btn-release").each(function(i,d) {
+            data.push($(d).data('release'));
+        })
+        
+        console.log("selected releases: ", data);
+        return data;
+    }
+    
     //remove disabled lines from the chart
     function filterOutDisabledReleases() {
         var data = [];
@@ -216,8 +245,11 @@ $(document).ready(function() {
 
         //check if we need to constrain by time before returning
         //we need to constrain by past_n_days of latest release only
+        console.log("telemetry_data", telemetry_data);
+        console.log("data", data, past_n_days);
         data = modify_time_period(data, past_n_days)
 
+        console.log("data in filterOutDisabledReleases", data);
         return data;
     }
     
@@ -324,6 +356,8 @@ $(document).ready(function() {
 
                 $('.btn-release-options.line' + chosen_i + '-legend-box-color')
                     .css('opacity', 0.5);
+                    
+                console.log(showing_releases);
             }
 
             //update data    
@@ -336,7 +370,6 @@ $(document).ready(function() {
         //telemetry measure
         $('.measure').click(function () {
             var chosen_measure = $(this).val();
-            console.log(chosen_measure);
 
             //redraw histogram and line chart
             drawCharts();
