@@ -55,25 +55,28 @@ $(document).ready(function() {
 
             //style dropdowns
             $("select").select2();
+            
+            //draw charts and assign event listeners and that's about it
+            drawChart();
+            assignEventListeners();
         });
     });
-
-    //draw charts and assign event listeners and that's about it
-    drawCharts();
-    assignEventListeners();
     
-    
-    //draw histogram and line chart
-    function drawCharts() {
+    //draw line chart and histogram
+    function drawChart() {
+        console.log("drawing chart");
+        
         telemetry_data = new Array();
 
         Telemetry.init(function() {
             //set selected measure
             var selected_measure = $(".measure option:selected").text();
+            console.log("selected measure: ", selected_measure);
         
             //get evolution data for all three versions, regardless of whether or not
             //they're enabled, we'll be filtering them out later
             $.each(selectedReleases(), function(i, version) {
+                console.log("populating telemetry_data, getting data for version: ", version);
                 //get measures for this version
                 Telemetry.measures(version, function(measures) {
                     //check that selected measure is valid
@@ -96,7 +99,7 @@ $(document).ready(function() {
                         });
 
                         //add this release's time-series data to telemetry_data
-                        telemetry_data.push(data);
+                        telemetry_data[i] = data;
                         
                         //only plot, when we have the data for all releases loaded
                         check_everything(telemetry_data);
@@ -107,27 +110,11 @@ $(document).ready(function() {
             //only plot, when we have the data for all releases loaded
             function check_everything(data) {
                 if (data.length == selectedReleases().length) {
-                    plot_it(data);
+                    console.log(data);
+                    
+                    //draw the line chart
+                    redrawLineChart({});
                 }
-            }
-            
-            //get count of enabled releases
-            function numberOfEnabledReleases() {
-                var count = 0;
-                $.each(showing_releases, function(i, d) {
-                    if(d != "")
-                        count++;
-                })
-
-                return count;
-            }
-
-            //draw evolution chart
-            function plot_it(data) {
-                console.log(data);
-                
-                //draw the chart on first-load
-                updateDataMySon({});
             }
 
             //draw histogram
@@ -189,13 +176,62 @@ $(document).ready(function() {
                     x_accessor: 'x',
                     y_accessor: 'y'
                 })   
-                
-                
+
                 //update histogram color
                 d3.selectAll(".bar rect")
                     .classed('area' + options.sequence + '-color', true);   
             });
         })
+    }
+    
+    //redraw the line chart
+    function redrawLineChart(options) {
+        //don't show years for build ids or if we explicitly pass that in as an option
+        var show_years = (options.show_years == false 
+            || global.options['show-evolution-over'] == 'build-ids')
+                ? false
+                : true;
+
+        var x_label = (options.x_label !== undefined 
+            || global.options['show-evolution-over'] == 'build-ids')
+                ? 'Build IDs'
+                : '';
+
+        //call moz_chart, taking into consideration options and filters that 
+        //the user has set
+        moz_chart({
+            title: "Submissions",
+            description: "The number of submissions for the chosen measure.",
+            data: filterOutDisabledReleases(),
+            width: 500,
+            height: 400,
+            right: 10,
+            area: false,
+            target: '#main-chart',
+            show_years: show_years,
+            markers: markers,
+            x_extended_ticks: true,
+            y_extended_ticks: true,
+            x_label: x_label,
+            xax_tick: 0,
+            xax_count: 4,
+            x_accessor: 'date',
+            y_accessor: 'value',
+            xax_format: function(d) {
+                if(global.options['show-evolution-over'] == 'build-ids') {
+                    //use build ids instead of dates
+                    var df = d3.time.format('%Y%m%d');
+                    return df(d);
+                }
+                else if(global.options['show-evolution-over'] == 'calendar-dates') {
+                    //use calendar dates instead
+                    var df = d3.time.format('%b %d');
+                    return df(d);
+                }
+            },
+            custom_line_color_map: customerLineToColorMap(),
+            max_data_size: showing_releases.length
+        });
     }
 
     //get selected releases, regardless of whether or not they're enabled
@@ -211,7 +247,7 @@ $(document).ready(function() {
         
         return data;
     }
-    
+
     //remove disabled lines from the chart
     function filterOutDisabledReleases() {
         var data = [];
@@ -254,6 +290,7 @@ $(document).ready(function() {
         return data;
     }
 
+    //get count of enabled releases
     function numOfEnabledReleases() {
         //var releases = d3.entries(showing_releases);
         var count = 0;
@@ -262,6 +299,7 @@ $(document).ready(function() {
         return count;
     }
 
+    //assign event listeners to dom elements
     function assignEventListeners() {
         //switch to release
         $('.btn-release').click(function () {
@@ -342,9 +380,8 @@ $(document).ready(function() {
                 console.log(showing_releases);
             }
 
-            //update data    
-            //remove disabled one from data
-            updateDataMySon({});
+            //redraw the line chart
+            redrawLineChart({});
 
             return false;
         })
@@ -354,7 +391,7 @@ $(document).ready(function() {
             var chosen_measure = $(this).val();
 
             //redraw histogram and line chart
-            drawCharts();
+            drawChart();
         });
 
         //preferences
@@ -370,7 +407,7 @@ $(document).ready(function() {
                 global.options['show-evolution-over'] = 'build-ids';
 
                 //update data
-                updateDataMySon({
+                redrawLineChart({
                     show_years: false
                 });
             }
@@ -378,7 +415,7 @@ $(document).ready(function() {
             else if(chosen_option_value == 'calendar-dates') {
                 global.options['show-evolution-over'] = 'calendar-dates';
 
-                updateDataMySon({});
+                redrawLineChart({});
             }
         });
 
@@ -473,7 +510,7 @@ $(document).ready(function() {
                 .removeClass('active');
 
             //update data
-            updateDataMySon({});
+            redrawLineChart({});
         })
 
         //switch between light and dark themes
@@ -508,55 +545,5 @@ $(document).ready(function() {
             $('#light-telemetry').attr({href : 'css/telemetry.css'});
             return false;
         })
-    }
-
-    //update data
-    function updateDataMySon(options) {
-        //don't show years for build ids or if we explicitly pass that in as an option
-        var show_years = (options.show_years == false 
-            || global.options['show-evolution-over'] == 'build-ids')
-                ? false
-                : true;
-
-        var x_label = (options.x_label !== undefined 
-            || global.options['show-evolution-over'] == 'build-ids')
-                ? 'Build IDs'
-                : '';
-
-        //call moz_chart, taking into consideration options and filters that 
-        //the user has set
-        moz_chart({
-            title: "Submissions",
-            description: "The number of submissions for the chosen measure.",
-            data: filterOutDisabledReleases(),
-            width: 500,
-            height: 400,
-            right: 10,
-            area: false,
-            target: '#main-chart',
-            show_years: show_years,
-            markers: markers,
-            x_extended_ticks: true,
-            y_extended_ticks: true,
-            x_label: x_label,
-            xax_tick: 0,
-            xax_count: 4,
-            x_accessor: 'date',
-            y_accessor: 'value',
-            xax_format: function(d) {
-                if(global.options['show-evolution-over'] == 'build-ids') {
-                    //use build ids instead of dates
-                    var df = d3.time.format('%Y%m%d');
-                    return df(d);
-                }
-                else if(global.options['show-evolution-over'] == 'calendar-dates') {
-                    //use calendar dates instead
-                    var df = d3.time.format('%b %d');
-                    return df(d);
-                }
-            },
-            custom_line_color_map: customerLineToColorMap(),
-            max_data_size: showing_releases.length
-        });
     }
 })// end document.ready
