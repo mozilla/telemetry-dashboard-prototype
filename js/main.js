@@ -9,9 +9,7 @@ $(document).ready(function() {
         'nightly/34'
     ];
     //todo don't hard-code
-    var selected_release = 'nightly/34',
-        selected_release_seq = 3;
-
+    var selected_release_seq = 3;
 
     //telemetry data for a subset of channels/versions for a chosen measure
     var telemetry_data = new Array();
@@ -37,9 +35,13 @@ $(document).ready(function() {
     //populate dropdown on first-load
     Telemetry.init(function() {
         var versions = Telemetry.versions();
+        
+        //populate versions in 'change release' dropdown
+        console.log(versions);
+        populateVersionsDropdown(versions);
 
         //get one of the versions (todo)
-        var version = showing_releases[showing_releases.length-1];
+        var version = showing_releases[selected_release_seq-1];
 
         Telemetry.measures(version, function(measures) {
             //turn into an array
@@ -66,6 +68,39 @@ $(document).ready(function() {
             assignEventListeners();
         });
     });
+    
+    //populates the versions dropdown in the 'change release' modal
+    function populateVersionsDropdown(versions) {
+        //sort versions--newer to older
+        versions.sort(function(a, b) {
+            if (a.toLowerCase() < b.toLowerCase()) return 1;
+            if (a.toLowerCase() > b.toLowerCase()) return -1;
+            return 0;
+        });
+
+        //populate dropdown with measures
+        var options = $(".releases-dropdown");
+        $.each(versions, function(i, d) {
+            options.append($("<option />").val(d).text(d));
+        });
+
+        //style dropdowns
+        $("select").select2();
+    }
+    
+    //select the chosen version in the versions dropdown
+    function refocusVersionsDropdown(version, sequence) {
+        console.log(version, sequence);
+        
+        $(".releases-dropdown option").each(function () {
+            if ($(this).val() == version) {
+                $(this).attr("selected", "selected");
+                return;
+            }
+            
+            $("select.releases-dropdown").select2();
+        });
+    }
     
     //draw line chart and histogram
     function drawChart() {
@@ -124,7 +159,7 @@ $(document).ready(function() {
 
             //draw histogram
             setTimeout(function() {
-                drawHistogram({title: selected_release, sequence: selected_release_seq});
+                drawHistogram({title: showing_releases[selected_release_seq-1], sequence: selected_release_seq});
             }, 50);
 
             //default color for histogram
@@ -154,12 +189,12 @@ $(document).ready(function() {
                 var y_scale_type = (histogram.kind() == 'exponential')
                         ? 'log'
                         : 'linear';
-                        
+
                 //if histogram is exponential, use log scale
                 var xax_count = (histogram.kind() == 'flag' || histogram.kind() == 'boolean')
                         ? 2
                         : 10;
-                        
+
                 console.log(histogram.kind());
 
                 //draw the histogram
@@ -251,7 +286,9 @@ $(document).ready(function() {
         var data = [];
         
         $(".btn-release").each(function(i,d) {
-            data.push($(d).data('release'));
+            console.log(d, $(d).text());
+            data.push($(d).text());
+            console.log(data);
         })
 
         console.log("selected releases: ", data);
@@ -318,7 +355,6 @@ $(document).ready(function() {
             var chosen_i = $(this).data('sequence')
             
             //for when we redraw the histogram on measure change
-            selected_release = $(this).text();
             selected_release_seq = chosen_i;
 
             //if button is disabled, all bets are off
@@ -451,9 +487,41 @@ $(document).ready(function() {
             var chosen_sequence = $($(".open").children()[0]).data('sequence');
             console.log(chosen_release, chosen_sequence);
 
-            //TODO updated the button with the newly selected release
-            //TODO do other stuff to update chart
+            //update the button with the newly selected release name
+            $('.btn-release*[data-sequence="' + chosen_sequence + '"]')
+                .attr('data-release', chosen_release)
+                .text(chosen_release);
+            $('.disable-enable*[data-sequence="' + chosen_sequence + '"]')
+                .attr('data-release', chosen_release);
+            $('.change*[data-sequence="' + chosen_sequence + '"]')
+                .attr('data-release', chosen_release);
+
+            //update set of releases
+            console.log("updating showing_releases :: setting pos i ", chosen_sequence-1, " to ", chosen_release); 
+            showing_releases[chosen_sequence-1] = chosen_release;
+            console.log(showing_releases);
+
+            //redraw histogram and line chart
+            setTimeout(function() {
+                drawChart();
+            }, 100);
         });
+
+        //have we clicked on 'change' for a particular release
+        $('.change').click(function () {
+            var chosen_i = $(this).data('sequence'); //doesn't change
+            var chosen_release = $(this).attr('data-release'); //since this can change
+
+            //dim the background
+            $(".dim").show();
+
+            //show the modal box
+            $("#choose-releases-box").show();
+            
+            refocusVersionsDropdown(chosen_release, chosen_i);
+
+            return false;
+        })
 
         //preferences
         $('.preferences').click(function () {
@@ -480,19 +548,6 @@ $(document).ready(function() {
 
             return false;
         });
-
-        //change release
-        $('.change').click(function () {
-            var chosen_i = $(this).data('sequence')
-
-            //dim the background
-            $(".dim").show();
-
-            //show the modal box
-            $("#choose-releases-box").show();
-
-            return false;
-        })
 
         //modal box event listeners
         $(".close_modal_box").click(function(e) {
