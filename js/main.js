@@ -3,12 +3,14 @@
 $(document).ready(function() {
     //todo don't hard-code
     //array since we'll want it to be int-indexed (order is significant)
+    //we're hard-coding here, but could easily set it using 'versions' below
     var showing_releases = [
         'nightly/32',
         'nightly/33',
         'nightly/34'
     ];
-    //todo don't hard-code
+
+    //the release that we're selecting by default, for showing the histogram
     var selected_release_seq = 3;
 
     //telemetry data for a subset of channels/versions for a chosen measure
@@ -31,6 +33,19 @@ $(document).ready(function() {
         'date': new Date('2014-07-22T00:00:00.000Z'),
         'label': 'v31 released'
     }];
+
+    //populate 3 releases' buttons on first-load
+    $.each(showing_releases, function(i, d) {
+        $('.btn-release*[data-sequence=' + (i+1) + ']')
+            .attr('data-release', showing_releases[i])
+            .text(showing_releases[i]);
+            
+        $('.disable-enable*[data-sequence=' + (i+1) + ']')
+            .attr('data-release', showing_releases[i]);
+            
+        $('.change*[data-sequence=' + (i+1) + ']')
+            .attr('data-release', showing_releases[i]);
+    });
 
     //populate dropdown on first-load
     Telemetry.init(function() {
@@ -481,7 +496,7 @@ $(document).ready(function() {
             //TODO repopulate other dropdowns if necessary, e.g. OS version on OS change
         });
         
-        //change release
+        //change release (having clicked one in the dropdown)
         $('.releases-dropdown').click(function () {
             var chosen_release = $(this).val();
             var chosen_sequence = $($(".open").children()[0]).data('sequence');
