@@ -722,8 +722,8 @@ function markers(args) {
             gb.selectAll('.baselines')
                 .data(args.baselines)
                 .enter().append('line')
-                    .attr('x1', args.left + args.buffer)
-                    .attr('x2', args.width - args.right)
+                    .attr('x1', args.left)
+                    .attr('x2', args.width)
                     .attr('y1', function(d){
                         return args.scales.Y(d['value'])})
                     .attr('y2', function(d){return args.scales.Y(d['value'])});
@@ -731,7 +731,7 @@ function markers(args) {
             gb.selectAll('.baselines')
                 .data(args.baselines)
                 .enter().append('text')
-                    .attr('x', args.width - args.right)
+                    .attr('x', args.width)
                     .attr('y', function(d){return args.scales.Y(d['value'])})
                     .attr('dy', -3)
                     .attr('text-anchor', 'end')
