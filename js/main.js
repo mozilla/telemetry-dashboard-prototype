@@ -106,7 +106,7 @@ $(document).ready(function() {
     //select the chosen version in the versions dropdown
     function refocusVersionsDropdown(version, sequence) {
         console.log(version, sequence);
-        
+
         $(".releases-dropdown option").each(function () {
             if ($(this).val() == version) {
                 $(this).attr("selected", "selected");
@@ -116,7 +116,7 @@ $(document).ready(function() {
             $("select.releases-dropdown").select2();
         });
     }
-    
+
     //draw line chart and histogram
     function drawChart() {
         console.log("drawing chart");
@@ -148,14 +148,14 @@ $(document).ready(function() {
                             histogram.map(function(count, start, end, index) {
                                 total += count * index;
                             });
-                            
+
                             data.push({'date': date, 'value': total});
-                            
+
                         });
 
                         //add this release's time-series data to telemetry_data
                         telemetry_data[i] = data;
-                        
+
                         //only plot, when we have the data for all releases loaded
                         check_everything(telemetry_data);
                     });
@@ -166,7 +166,7 @@ $(document).ready(function() {
             function check_everything(data) {
                 if (data.length == selectedReleases().length) {
                     console.log(data);
-                    
+
                     //draw the line chart
                     redrawLineChart({});
                 }
@@ -187,7 +187,7 @@ $(document).ready(function() {
     function drawHistogram(options) {
         var version = (options.title) ? options.title : 'Histogram';
         var selected_measure = $(".measure option:selected").text();
-        
+
         Telemetry.init(function() {
             //get evolution data for the selected version
             console.log("drawing histogram: ", version, selected_measure);
@@ -204,6 +204,13 @@ $(document).ready(function() {
                 var y_scale_type = (histogram.kind() == 'exponential')
                         ? 'log'
                         : 'linear';
+
+                var baselines = []
+
+                if(histogram.kind() == 'exponential' || histogram.kind() == 'linear') {
+                    baselines.push({value:histogram.percentile(50), label: 'median (' + histogram.median().toFixed(2) + ')'});
+                    baselines.push({value:histogram.percentile(95), label: '95% (' + histogram.percentile(95).toFixed(2) + ')'});
+                }
 
                 //if histogram is exponential, use log scale
                 var xax_count = (histogram.kind() == 'flag' || histogram.kind() == 'boolean')
@@ -228,6 +235,7 @@ $(document).ready(function() {
                     xax_count: xax_count,
                     xax_tick: 5,
                     bar_margin: 0,
+                    baselines: baselines,
                     binned: true,
                     rollover_callback: function(d, i) {
                         var format = d3.format("0,000");
@@ -245,7 +253,7 @@ $(document).ready(function() {
             });
         })
     }
-    
+
     //redraw the line chart
     function redrawLineChart(options) {
         //don't show years for build ids or if we explicitly pass that in as an option
@@ -495,7 +503,7 @@ $(document).ready(function() {
             //TODO do other stuff to update chart with new filters
             //TODO repopulate other dropdowns if necessary, e.g. OS version on OS change
         });
-        
+
         //change release (having clicked one in the dropdown)
         $('.releases-dropdown').click(function () {
             var chosen_release = $(this).val();
@@ -632,4 +640,4 @@ $(document).ready(function() {
             return false;
         })
     }
-})// end document.ready
+})

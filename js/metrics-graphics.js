@@ -96,7 +96,7 @@ function moz_chart() {
     }
     else if(args.chart_type == 'histogram'){
         args = merge_with_defaults(args, moz.defaults.histogram);
-        charts.histogram(args).markers().mainPlot().rollover();
+        charts.histogram(args).mainPlot().markers().rollover();
     }
     else {
         charts.line(args).markers().mainPlot().rollover();
@@ -723,7 +723,7 @@ function markers(args) {
                 .data(args.baselines)
                 .enter().append('line')
                     .attr('x1', args.left + args.buffer)
-                    .attr('x2', args.width-args.right-args.buffer)
+                    .attr('x2', args.width - args.right)
                     .attr('y1', function(d){
                         return args.scales.Y(d['value'])})
                     .attr('y2', function(d){return args.scales.Y(d['value'])});
@@ -731,7 +731,7 @@ function markers(args) {
             gb.selectAll('.baselines')
                 .data(args.baselines)
                 .enter().append('text')
-                    .attr('x', args.width-args.right - args.buffer)
+                    .attr('x', args.width - args.right)
                     .attr('y', function(d){return args.scales.Y(d['value'])})
                     .attr('dy', -3)
                     .attr('text-anchor', 'end')
@@ -1172,8 +1172,13 @@ charts.histogram = function(args) {
                 .enter().append("g")
                     .attr("class", "bar")
                     .attr("transform", function(d) {
+                        //suppress errors when y value is 0
+                        var y_val = (d[args.y_accessor] == 0)
+                            ? 0
+                            : args.scales.Y(d[args.y_accessor]);
+
                         return "translate(" + args.scales.X(d[args.x_accessor]) 
-                            + "," + args.scales.Y(d[args.y_accessor]) + ")";
+                            + "," + y_val + ")";
                         });
 
         //draw bars
@@ -1504,6 +1509,9 @@ function modify_time_period(data, past_n_days) {
         for(var i=0; i<data_spliced.length; i++) {
             data_filtered[i] = [];
 
+            if(data_spliced[i] == undefined)
+                continue;
+            
             var from = data_spliced[i].length - past_n_days;
             data_spliced[i].splice(0,from);
 
