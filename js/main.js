@@ -208,10 +208,9 @@ $(document).ready(function() {
                 var baselines = []
 
                 if(histogram.kind() == 'exponential' || histogram.kind() == 'linear') {
-                    //baselines.push({value:histogram.percentile(50), 
-                    //    label: 'median (' + histogram.median().toFixed(2) + ')'});
+                    var format = d3.format("0,000");
                     baselines.push({value:histogram.percentile(95), 
-                        label: '95% (' + histogram.percentile(95).toFixed(2) + ')'});
+                        label: '95% (' + format(histogram.percentile(95).toFixed(2)) + ')'});
                 }
 
                 //if histogram is exponential, use log scale
