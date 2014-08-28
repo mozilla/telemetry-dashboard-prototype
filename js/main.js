@@ -292,7 +292,6 @@ $(document).ready(function() {
             target: '#main-chart',
             show_years: show_years,
             markers: markers,
-            x_extended_ticks: true,
             y_extended_ticks: true,
             x_label: x_label,
             xax_tick: 0,
