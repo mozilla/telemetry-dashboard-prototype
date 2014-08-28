@@ -205,13 +205,13 @@ $(document).ready(function() {
                         ? 'log'
                         : 'linear';
 
+                //for adding horizontal markers
                 var baselines = []
 
                 //add percentile and stats data
                 if(histogram.kind() == 'exponential' || histogram.kind() == 'linear') {
                     var format = d3.format("0,000");
                     baselines.push({value:histogram.percentile(95), label: '95%'});
-                    //label: '95% (' + format(histogram.percentile(95).toFixed(2)) + ')'});
                         
                     $('.stats-95-percentile span').text(format(histogram.percentile(95).toFixed(2)));
                     $('.stats-median span').text(format(histogram.percentile(50).toFixed(2)));

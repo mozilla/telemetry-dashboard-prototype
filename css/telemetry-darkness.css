@@ -1,3 +1,14 @@
+a,
+a:active,
+a:visited,
+a:hover {
+    color: #71b4eb;
+}
+
+a.active:hover {
+    color: #fff;
+}
+
 .area1-color,
 .line1-legend-box-color {
     fill: #6db3ed;
