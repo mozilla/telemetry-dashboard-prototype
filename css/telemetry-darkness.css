@@ -1,6 +1,6 @@
 .area1-color,
 .line1-legend-box-color {
-    fill: #a5d2f7;
+    fill: #6db3ed;
 }
 
 .histogram .bar rect.area1-color.active {
@@ -16,8 +16,8 @@
 }
 
 .line1-legend-box-color {
-    background-color: #a5d2f7;
-    border-color: #a5d2f7;
+    background-color: #6db3ed;
+    border-color: #6db3ed;
 }
 
 .line2-legend-box-color {
@@ -31,7 +31,7 @@
 }
 
 .line1-color {
-    stroke: #a5d2f7;
+    stroke: #6db3ed;
 }
 
 .line2-color {
