@@ -76,7 +76,24 @@
     
             <div id='trunk'>
                 <div class='row trunk-section'>
-                    <div class='col-lg-6 text-center' id='histogram'></div>
+                    <div class='col-lg-6 text-center'>
+                        <div class='row'>
+                            <div class='col-lg-12 gr' id='histogram'></div>
+                        </div>
+                        <div class='row stats'>
+                            <!-- Stats -->
+                            <div class='col-lg-4 stats-95-percentile'>
+                                95th percentile: <span></span>
+                            </div>
+                            <div class='col-lg-4 stats-median'>
+                                Median: <span></span>
+                            </div>
+                            <div class='col-lg-4 stats-submissions'>
+                                Submissions: <span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class='col-lg-6 text-center'>
                         <div class='row'>
                             <div class='col-lg-12 gr' id='main-chart'></div>

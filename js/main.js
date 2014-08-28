@@ -207,10 +207,21 @@ $(document).ready(function() {
 
                 var baselines = []
 
+                //add percentile and stats data
                 if(histogram.kind() == 'exponential' || histogram.kind() == 'linear') {
                     var format = d3.format("0,000");
-                    baselines.push({value:histogram.percentile(95), 
-                        label: '95% (' + format(histogram.percentile(95).toFixed(2)) + ')'});
+                    baselines.push({value:histogram.percentile(95), label: '95%'});
+                    //label: '95% (' + format(histogram.percentile(95).toFixed(2)) + ')'});
+                        
+                    $('.stats-95-percentile span').text(format(histogram.percentile(95).toFixed(2)));
+                    $('.stats-median span').text(format(histogram.percentile(50).toFixed(2)));
+                    $('.stats-submissions span').text(format(histogram.submissions().toFixed(2)));
+                    
+                    $('.stats').show();
+                }
+                else {
+                    //hide stats box otherwise
+                    $('.stats').hide();
                 }
 
                 //if histogram is exponential, use log scale
