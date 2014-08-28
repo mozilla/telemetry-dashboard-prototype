@@ -226,9 +226,9 @@
     font-size: 11px;
 }
 
-.select2-chosen,
-.select2-choice > span:first-child,
-.select2-container .select2-choices .select2-search-field input {
+.measure .select2-choice .select2-chosen,
+.measure .select2-choice > span:first-child,
+.select2-container.measure .select2-choices .select2-search-field input {
     padding: 9px 12px;
 }
 
