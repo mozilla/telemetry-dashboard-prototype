@@ -4,11 +4,11 @@
 }
 
 .histogram .bar rect.area1-color.active {
-    fill: #a5d2f7;
+    fill: #5d9dd3;
 }
 
 .histogram .bar rect.area2-color.active {
-    fill: #18ff00;
+    fill: #049262;
 }
 
 .histogram .bar rect.area3-color.active {
@@ -21,8 +21,8 @@
 }
 
 .line2-legend-box-color {
-    background-color: #18ff00;
-    border-color: #18ff00;
+    background-color: #05b378;
+    border-color: #05b378;
 }
 
 .line3-legend-box-color {
@@ -35,18 +35,18 @@
 }
 
 .line2-color {
-    stroke: #18ff00;
+    stroke: #05b378;
 }
 
 .legend .btn-group .btn, 
 .legend .btn-group .btn:focus {
-    color: #3b3b3b;
+    color: white;
     text-shadow: none;
 }
 
 .legend .btn-group .btn:hover {
-    color: #3b3b3b;
-    border-color: none;
+    color: white;
+    border:1px solid rgba(0, 0, 0, 0);
 }
 
 .legend span span {
