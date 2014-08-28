@@ -70,3 +70,9 @@
     background-color: #202020;
     border-color: #525151;
 }
+
+.select2-container .select2-choices .select2-search-field input,
+.select2-container .select2-choice,
+.select2-container .select2-choices {
+    background-color: #f1f1f1;
+}
