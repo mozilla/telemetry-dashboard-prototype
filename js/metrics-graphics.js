@@ -160,6 +160,9 @@ function xAxis(args) {
         min_x = d3.min(args.data[0], function(d){return d[args.x_accessor]});
         max_x = d3.max(args.data[0], function(d){return d[args.x_accessor]});
         
+        //increase max by one
+        max_x = max_x + 1;
+        
         //force override xax_format
         //todo revisit to see if this makes sense        
         args.xax_format = function(f) {
@@ -722,8 +725,8 @@ function markers(args) {
             gb.selectAll('.baselines')
                 .data(args.baselines)
                 .enter().append('line')
-                    .attr('x1', args.left)
-                    .attr('x2', args.width)
+                    .attr('x1', args.left + args.buffer)
+                    .attr('x2', args.width-args.right-args.buffer)
                     .attr('y1', function(d){
                         return args.scales.Y(d['value'])})
                     .attr('y2', function(d){return args.scales.Y(d['value'])});
@@ -731,7 +734,7 @@ function markers(args) {
             gb.selectAll('.baselines')
                 .data(args.baselines)
                 .enter().append('text')
-                    .attr('x', args.width)
+                    .attr('x', args.width-args.right - args.buffer)
                     .attr('y', function(d){return args.scales.Y(d['value'])})
                     .attr('dy', -3)
                     .attr('text-anchor', 'end')

@@ -165,7 +165,7 @@ $(document).ready(function() {
             //only plot, when we have the data for all releases loaded
             function check_everything(data) {
                 if (data.length == selectedReleases().length) {
-                    console.log(data);
+                    //console.log(data);
 
                     //draw the line chart
                     redrawLineChart({});
@@ -229,8 +229,6 @@ $(document).ready(function() {
                         ? 2
                         : 10;
 
-                console.log(histogram.kind());
-
                 //draw the histogram
                 moz_chart({
                     title: version,
@@ -240,7 +238,6 @@ $(document).ready(function() {
                     width: 550,
                     height: 389,
                     left: 40,
-                    right: 40,
                     y_scale_type: y_scale_type,
                     target: '#histogram',
                     y_extended_ticks: true,
@@ -320,13 +317,13 @@ $(document).ready(function() {
         var data = [];
         
         $(".btn-release").each(function(i,d) {
-            console.log(d, $(d).text());
+            //console.log(d, $(d).text());
             data.push($(d).text());
-            console.log(data);
+            //console.log(data);
         })
 
-        console.log("selected releases: ", data);
-        console.log("showing releases: ", showing_releases);
+        //console.log("selected releases: ", data);
+        //console.log("showing releases: ", showing_releases);
         
         return data;
     }
@@ -345,8 +342,8 @@ $(document).ready(function() {
 
         //check if we need to constrain by time before returning
         //we need to constrain by past_n_days of latest release only
-        console.log("telemetry_data", telemetry_data);
-        console.log("data", data, past_n_days);
+        //console.log("telemetry_data", telemetry_data);
+        //console.log("data", data, past_n_days);
         data = modify_time_period(data, past_n_days)
 
         console.log("data in filterOutDisabledReleases", data);
