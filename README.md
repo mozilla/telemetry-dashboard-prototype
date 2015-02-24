@@ -1,3 +1,3 @@
 Telemetry Dashboard Prototype
 
-https://metrics.mozilla.com/protected/dashboards/telemetry-prototype
+https://metrics.mozilla.com/dashboards/telemetry-prototype
